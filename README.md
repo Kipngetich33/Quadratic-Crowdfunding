@@ -13,7 +13,9 @@
 
 --- 
 
-## Business Logic
+## ROADMAP
+
+### Business Logic
 - Initiate a contract
 - Create a Participant 
 - Create an account for a participant
@@ -26,33 +28,33 @@
 
 ---
 
-## Initial implementation version = 0.0.1 (WIP)
+### Initial implementation version = 0.0.1 (WIP)
 - Predefine 3 users that will interact with the contract i.e Prince,Kip and Jazz
 - DApp gets user name and compares it with prededined users 
 - A user has option to create a test account with 500 units on testnet
 - Any of the users can deploy the contract and the other can attach to it
 
-## Donation implementation version = 0.0.2 (Open)
+### Donation implementation version = 0.0.2 (Open)
 - Allow user to donate to the pool i.e the contract
 - Show the total amount donated to the pool 
 
-## Voting implementaton version = 0.0.3 (Open)
+### Voting implementaton version = 0.0.3 (Open)
 - Predefine 2 projects that user can donate to
 - Functionality to allow users vote for their favorite projects
 - Show total votes for each project
 
-## Funds share implementation version = 0.0.4 (open)
+### Funds share implementation version = 0.0.4 (open)
 - Use votes and formula to calculate funds each project will recive
 - Show the results of the share that each project will recieve
 
-## Disburse funds implementation version = 0.0.4 (open)
+### Disburse funds implementation version = 0.0.4 (open)
 - Define an account for each project
 - Send the correct share amount to the project's account
 
-## Contract life implementation version = 0.0.5 (open)
+### Contract life implementation version = 0.0.5 (open)
 - Define at what point the contract will end and send the funds
 
-## Complemt Version 1.0.0 (open)
+### Complemt Version 1.0.0 (open)
 - Clean up the code and add comments
 - Add tests and assertions
 
