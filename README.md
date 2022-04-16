@@ -13,8 +13,6 @@
 
 --- 
 
-## ROADMAP
-
 ### Business Logic
 - Initiate a contract
 - Create a Participant 
@@ -27,6 +25,8 @@
 - Transfer funds to project accounts based on calulated share 
 
 ---
+
+## ROADMAP
 
 ### Initial implementation version = 0.0.1 (WIP)
 - Predefine 3 users that will interact with the contract i.e Prince,Kip and Jazz
