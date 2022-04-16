@@ -1,14 +1,14 @@
 import { loadStdlib } from '@reach-sh/stdlib';
-import * as backend from '/build/index.main.mjs';
+import * as backend from './build/index.main.mjs';
 import { ask, yesno, done } from '@reach-sh/stdlib/ask.mjs'
-const stdlib = loadStdlib(process.env)
+const stdlib = loadStdlib(process.env);
 
 (async () => {
     // *************************************************************************************************************************
     //contract introduction section
 
     //add comments to show the user that the contract is starting
-    console.log(".......................Quadratic Crowdfunding.......................")
+    console.log(".......................Quadratic Crowdfunding...................................................................")
     console.log("Starting.............................................................")
 
     
@@ -39,12 +39,12 @@ const stdlib = loadStdlib(process.env)
     )
 
     //ask the user to create or use existing account
-    createNewAccount = await ask(
-        'Do you want to create a new account (on testnet)?',
+    const createNewAccount = await ask(
+        'Do you want to create a new account (on testnet)? (y/n)',
         yesno
     )
 
-    userAccount = null //initiate userAccount as null
+    let userAccount = null //initiate userAccount as null
     //check if user wants to create new account
     if(createNewAccount){
         //create a new test account and initialize value to 500 units
@@ -53,7 +53,7 @@ const stdlib = loadStdlib(process.env)
         // if the user already has an account ask the user for the account secret
         const accountSecret = await ask(
             'Enter your accounts secret',
-            (x => x)
+            (x => x) // use call back to return the details entered by the user
         )
         //retrive user account from entered account secret
         userAccount = await stdlib.newAccountFromSecret(accountSecret)
@@ -62,40 +62,44 @@ const stdlib = loadStdlib(process.env)
     // *************************************************************************************************************************
     //contract deployment/attachement section
 
-    ctc = null //initialize contract as null
+    let ctc = null //initialize contract as null
 
     //determine if the user wants to deploy the contract
     const deployContract = await ask(
-        'Do you want to deploy this contract',
+        'Do you want to deploy this contract? (y/n)',
         yesno
     )
 
     //determine action based on users respose above
     if(deployContract){
         //use the user's account to deploy the contract
-        ctc = userAccount.contract
+        ctc = userAccount.contract(backend)
+        ctc.getInfo().then((contractDetails) => {
+            console.log(`The contract is deployed as = ${JSON.stringify(contractDetails)}`)
+        })
     }else{
-
+        contractDetails = await ask(
+            'Please enter the contract information',
+            JSON.parse
+        )
+        //user the provided contract information to attach user's account to the contract
+        ctc = userAccount.contract(backend,contractDetails)
     }
-
-
-
-
-    // end of contract deployment section
     // *************************************************************************************************************************
-
-
-
-    
+    // define user interact section
 
 
     //detertmine the correct part/frontend for each user
-    userParts = {
-        'Prince':backend.Prince,
-        'Jazz':backend.Jazz,
-        'Kip':backend.Kip
-    }
+    // userParts = {
+    //     'Prince':backend.Prince,
+    //     'Jazz':backend.Jazz,
+    //     'Kip':backend.Kip
+    // }
 
     //await part()
+
+    // *************************************************************************************************************************
+    //the end
+    done()
 
 })()
