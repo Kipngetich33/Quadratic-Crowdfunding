@@ -29,6 +29,7 @@
 ## ROADMAP
 
 ### Initial implementation version = 0.0.1 (Closed)
+
 - Predefine 3 users that will interact with the contract i.e Prince,Kip and Jazz
 - DApp gets user name and compares it with prededined users 
 - A user has option to create a test account with 500 units on testnet
