@@ -13,8 +13,6 @@
 
 --- 
 
-## ROADMAP
-
 ### Business Logic
 - Initiate a contract
 - Create a Participant 
@@ -28,13 +26,16 @@
 
 ---
 
-### Initial implementation version = 0.0.1 (WIP)
+## ROADMAP
+
+### Initial implementation version = 0.0.1 (Closed)
 - Predefine 3 users that will interact with the contract i.e Prince,Kip and Jazz
 - DApp gets user name and compares it with prededined users 
 - A user has option to create a test account with 500 units on testnet
 - Any of the users can deploy the contract and the other can attach to it
+- Only Kip can close the contract once all participants have donated 
 
-### Donation implementation version = 0.0.2 (Open)
+### Donation implementation version = 0.0.2 (WIP)
 - Allow user to donate to the pool i.e the contract
 - Show the total amount donated to the pool 
 

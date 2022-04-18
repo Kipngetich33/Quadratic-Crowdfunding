@@ -1,12 +1,13 @@
 'reach 0.1';
 
 //define global variables
-const [isBoolean, TRUE, VALID ] = makeEnum(2);
+const [isBoolean, TRUE, FALSE ] = makeEnum(2);
 
 const User = {
     ...hasRandom,
-    donationAmt:UInt
-    // getName: Fun([], UInt),
+    donationAmt:UInt,
+    closeContract:UInt,
+    getCloseCommand: Fun([], UInt),
 }
 
 export const main = Reach.App(()=> {
@@ -61,26 +62,40 @@ export const main = Reach.App(()=> {
 
     Jazz.publish(donationAmtJazz)
         .pay(donationAmtJazz)
-
+    
     //define while loop with Var and invariant declarations
-    var contractIsAlive = TRUE
+    var contractIsAlive = 0
     invariant( balance() == (donationAmtKip + donationAmtPrince + donationAmtJazz) )
-    while(contractIsAlive == TRUE){
+    while(contractIsAlive == 0){
         //since we are within a consesus step we can commit below
         commit() // commit Jazz's step here
-        // var randomValue = TRUE
 
-        //just add a publish step to allow the code to compile for now
-        Kip.publish()
-       
+        //this is Kip only step
+        Kip.only(() => {
+            const _closeCommand = interact.getCloseCommand()
+            const closeCommand = declassify(_closeCommand)
+        })
+        Kip.publish(closeCommand)
+
+        // const closeCommand = declassify(interact.closeContract)
+
+        // //check if Kip wants to close the contract
+        // Kip.only(() => {
+        //     if(interact.closeContract == 1){
+        //         //close the contract
+        //         // contractIsAlive = FALSE 
+        //     }
+        // })
+        
+        contractIsAlive = closeCommand
         //add continue in order to break the loop
         continue
     }
     
     //transfer all tokens back to its owners for now to allow code to compile
     transfer(donationAmtKip).to(Kip)
-    transfer(donationAmtPrince).to(Prince)
-    transfer(donationAmtJazz).to(Jazz)
+    transfer(donationAmtPrince).to(Kip)
+    transfer(donationAmtJazz).to(Kip)
     //commit all the changes above
     commit()
 });

@@ -77,10 +77,8 @@ const stdlib = loadStdlib(process.env);
 
     //determine action based on users respose above
     if(deployContract){
-        console.log('starting deployment')
         //use the user's account to deploy the contract
         ctc = userAccount.contract(backend)
-        console.log("after starting")
         ctc.getInfo().then((contractDetails) => {
             console.log("deployed")
             console.log(`The contract is deployed as = ${JSON.stringify(contractDetails)}`)
@@ -105,6 +103,22 @@ const stdlib = loadStdlib(process.env);
     //add donation amout to interact
     interact.donationAmt = donatedAmt
 
+    //get close command function
+    interact.getCloseCommand = async () => {
+        console.log("getting closing command")
+        const closeContract = await ask(
+            'The contract is running.Do you want to close it?',
+            yesno
+        )
+        if(closeContract){
+            //set interact close command as 1
+            return 1
+        }else{
+            //set interact close command as 0
+            return 0
+        }
+    }
+
     // *************************************************************************************************************************
     // detertmine the correct part/frontend for each user
     const userParts = {
@@ -113,12 +127,20 @@ const stdlib = loadStdlib(process.env);
         'Kip':backend.Kip
     }
 
+    // *************************************************************************************************************************
+    //keep the contract alive
+    interact.closeContract = 0
+    //check it the current user is the one that deployed the contract
+    if(userName == 'Kip'){
+        
+    }
+    
+    // *************************************************************************************************************************
+    //the end
     const part = userParts[userName]
     await part(ctc, interact)
 
-    //await part()
-    // *************************************************************************************************************************
-    //the end
+    //get user account balance at the end of the contract
     const userAccountBalance = await getBalance(userAccount)
     console.log(`Your account balance is ${userAccountBalance}`)
     done()
