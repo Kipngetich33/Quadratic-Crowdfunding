@@ -4,6 +4,11 @@ import { ask, yesno, done } from '@reach-sh/stdlib/ask.mjs'
 const stdlib = loadStdlib(process.env);
 
 (async () => {
+     // *************************************************************************************************************************
+    //helper functions section
+    const currencyFormater = (x) => stdlib.formatCurrency(x,4) // format to 4 decimal places
+    const getBalance = async (userAccount) => currencyFormater(await stdlib.balanceOf(userAccount))
+
     // *************************************************************************************************************************
     //contract introduction section
 
@@ -72,34 +77,50 @@ const stdlib = loadStdlib(process.env);
 
     //determine action based on users respose above
     if(deployContract){
+        console.log('starting deployment')
         //use the user's account to deploy the contract
         ctc = userAccount.contract(backend)
+        console.log("after starting")
         ctc.getInfo().then((contractDetails) => {
+            console.log("deployed")
             console.log(`The contract is deployed as = ${JSON.stringify(contractDetails)}`)
         })
     }else{
-        contractDetails = await ask(
+        const contractDetails = await ask(
             'Please enter the contract information',
             JSON.parse
         )
         //user the provided contract information to attach user's account to the contract
         ctc = userAccount.contract(backend,contractDetails)
     }
+
+    //ask user how much they want to donate
+    const donatedAmt = await ask(
+        'How much do you want to donate',
+        stdlib.parseCurrency
+    )
+
+    //initialize user interact
+    const interact = { ...stdlib.hasRandom }
+    //add donation amout to interact
+    interact.donationAmt = donatedAmt
+
     // *************************************************************************************************************************
-    // define user interact section
+    // detertmine the correct part/frontend for each user
+    const userParts = {
+        'Prince':backend.Prince,
+        'Jazz':backend.Jazz,
+        'Kip':backend.Kip
+    }
 
-
-    //detertmine the correct part/frontend for each user
-    // userParts = {
-    //     'Prince':backend.Prince,
-    //     'Jazz':backend.Jazz,
-    //     'Kip':backend.Kip
-    // }
+    const part = userParts[userName]
+    await part(ctc, interact)
 
     //await part()
-
     // *************************************************************************************************************************
     //the end
+    const userAccountBalance = await getBalance(userAccount)
+    console.log(`Your account balance is ${userAccountBalance}`)
     done()
-
 })()
+
