@@ -3,12 +3,23 @@ import * as backend from './build/index.main.mjs';
 import { ask, yesno, done } from '@reach-sh/stdlib/ask.mjs'
 const stdlib = loadStdlib(process.env);
 
+//declare global variables
+let contractId = null;
+
 (async () => {
      // *************************************************************************************************************************
     //helper functions section
     const currencyFormater = (x) => stdlib.formatCurrency(x,4) // format to 4 decimal places
     const getBalance = async (userAccount) => currencyFormater(await stdlib.balanceOf(userAccount))
+    const parseAtomicToStandard = (atomicUnits) => atomicUnits/1000000 // function that converts atomice units to standard
 
+    //function that get the balance of funds payed to the contract
+    const getBalanceContract = async (contractId) => currencyFormater(await stdlib.balanceOf(contractId))
+    
+    //function that gets address of the contract
+    const getContractAddress = async (contactObj) => {
+        return contactObj.getContractAddress()
+    }
     // *************************************************************************************************************************
     //contract introduction section
 
@@ -22,11 +33,7 @@ const stdlib = loadStdlib(process.env);
 
     //i have initialized the application with three users for now as represented below
     const predefinedUserNames = ['Prince','Jazz','Kip']
-    const userNameValues = {
-        'Prince': 1,
-        'Jazz': 2,
-        'Kip': 3,
-    }
+    const predefinedProjects = ['School Project','Road Project']
 
     //ask user for their username
     const userName = await ask(
@@ -53,7 +60,7 @@ const stdlib = loadStdlib(process.env);
     //check if user wants to create new account
     if(createNewAccount){
         //create a new test account and initialize value to 500 units
-        userAccount = await stdlib.newTestAccount(stdlib.parseCurrency(500))
+        userAccount = await stdlib.newTestAccount(stdlib.parseCurrency(1000))
     }else{
         // if the user already has an account ask the user for the account secret
         const accountSecret = await ask(
@@ -80,8 +87,12 @@ const stdlib = loadStdlib(process.env);
         //use the user's account to deploy the contract
         ctc = userAccount.contract(backend)
         ctc.getInfo().then((contractDetails) => {
-            console.log("deployed")
             console.log(`The contract is deployed as = ${JSON.stringify(contractDetails)}`)
+            //get contract address and set the contractID as the address
+            ctc.getContractAddress().then((info) => {
+                contractId = info
+                console.log(`Deployed Contract's Address is ${contractId}`)
+            })
         })
     }else{
         const contractDetails = await ask(
@@ -103,19 +114,24 @@ const stdlib = loadStdlib(process.env);
     //add donation amout to interact
     interact.donationAmt = donatedAmt
 
+    interact.showTotalFunds = async (totalContractBalance) => {
+        const standardizedBalance = parseAtomicToStandard(totalContractBalance)
+        console.log(`Total funds donated : ${standardizedBalance}`)
+    }
+
     //get close command function
-    interact.getCloseCommand = async () => {
+    interact.getContractStatus = async () => {
         console.log("getting closing command")
         const closeContract = await ask(
-            'The contract is running.Do you want to close it?',
+            'The contract is running.Do you want to end it?',
             yesno
         )
         if(closeContract){
             //set interact close command as 1
-            return 1
+            return false
         }else{
             //set interact close command as 0
-            return 0
+            return true
         }
     }
 
@@ -142,6 +158,7 @@ const stdlib = loadStdlib(process.env);
 
     //get user account balance at the end of the contract
     const userAccountBalance = await getBalance(userAccount)
+    console.log("................................................................................................................")
     console.log(`Your account balance is ${userAccountBalance}`)
     done()
 })()

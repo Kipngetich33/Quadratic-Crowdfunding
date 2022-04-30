@@ -4,7 +4,6 @@ const User = {
     ...hasRandom,
     donationAmt:UInt,
     getContractStatus: Fun([], Bool),
-    showTotalFunds: Fun([UInt],Null)
 }
 
 //var school_project_votes = 0
@@ -76,22 +75,12 @@ export const main = Reach.App(()=> {
             const contractStatus = declassify(_contractStatus)
         })
         Kip.publish(contractStatus)
-
-        //run a step for all Participants so that participants can see the total donate amount
-        each([Kip,Jazz,Prince],() => {
-            const totalContractbalance = balance()
-            interact.showTotalFunds(totalContractbalance)
-        })
         
         //set contractStatus as contractIsAlive
-        contractIsAlive = contractStatus;
+        contractIsAlive = contractStatus
         //add continue in order to break the loop
         continue
     }
-
-    // const View_Contract = View('Contract', { balance: Address })
-    // View_Contract.balance.set(balance());
-
     
     //transfer all tokens back to its owners for now to allow code to compile
     transfer(donationAmtKip).to(Kip)
