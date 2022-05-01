@@ -4,11 +4,26 @@ const User = {
     ...hasRandom,
     donationAmt:UInt,
     getContractStatus: Fun([], Bool),
-    showTotalFunds: Fun([UInt],Null)
+    showTotalFunds: Fun([UInt],Null),
+    projectVote:UInt,
+    logFromBackend:Fun([UInt],Null),
+    logFromBackend2:Fun([Object({
+        road: UInt, 
+        school: UInt, 
+        status: Bool,
+        totalFunds:UInt
+    })],Null)
 }
 
-//var school_project_votes = 0
-//var road_project_votes = 0
+const projectVotes = {
+    school:0,
+    road:0
+}
+
+const userVotes = {
+    Kip:Null,
+    Prince:Null
+}
 
 export const main = Reach.App(()=> {
 
@@ -21,82 +36,111 @@ export const main = Reach.App(()=> {
     // })
 
     //The other three partipants are actual application users
-    const Prince = Participant('Prince', {
+    const Kip = Participant('Kip', {
         ...User,
     })
+
+    const Prince = Participant('Prince', {
+        ...User
+    })   
 
     const Jazz = Participant('Jazz', {
         ...User,
     })
 
-    const Kip = Participant('Kip', {
-        ...User
-    })    
-
     // now deploy the app to devnet
     init();
 
+    //Kip's step
     Kip.only(()=> {
         const donationAmtKip = declassify(interact.donationAmt)
-        // const deadline = declassify(interact.deadline)
     })
-
     Kip.publish(donationAmtKip)
         .pay(donationAmtKip)
-    commit()
+    commit();
 
+    //Prince Step
     Prince.only(()=> {
         const donationAmtPrince = declassify(interact.donationAmt)
-        // const deadline = declassify(interact.deadline)
     })
-
     Prince.publish(donationAmtPrince)
         .pay(donationAmtPrince)
-    //commit prince's step
-    commit()
-
+    commit();
+    //Jazz's step
     Jazz.only(()=> {
         const donationAmtJazz = declassify(interact.donationAmt)
-        // const deadline = declassify(interact.deadline)
     })
-
     Jazz.publish(donationAmtJazz)
         .pay(donationAmtJazz)
     
     //define while loop with Var and invariant declarations
-    var contractIsAlive = true
+    var contractDetails = {
+        status:true,
+        school:0,
+        road:0,
+        totalFunds:0
+    }
     invariant( balance() == (donationAmtKip + donationAmtPrince + donationAmtJazz) )
-    while(contractIsAlive){
-        //since we are within a consesus step we can commit below
-        commit() // commit Jazz's step here
-
-        //this is Kip only step
+    while(contractDetails.status){
+        commit()
+       
+        //this is a kip only step
         Kip.only(() => {
-            const _contractStatus = interact.getContractStatus()
-            const contractStatus = declassify(_contractStatus)
-        })
-        Kip.publish(contractStatus)
+            const usersVoteKip = declassify(interact.projectVote)
+            //new votes
+            const school_votes_kip =  usersVoteKip == 1 ? 1 : 0 
+            const road_votes_kip =  usersVoteKip == 2 ? 1 : 0 
+        });
+        //publish kips votes
+        Kip.publish(school_votes_kip,road_votes_kip)
+        commit();
 
-        //run a step for all Participants so that participants can see the total donate amount
-        each([Kip,Jazz,Prince],() => {
-            const totalContractbalance = balance()
-            interact.showTotalFunds(totalContractbalance)
+        //this is a price only step
+        Prince.only(() => {
+            const usersVotePrince = declassify(interact.projectVote)
+            //new votes
+            const school_votes_prince =  usersVotePrince == 1 ? 1 : 0 
+            const road_votes_prince =  usersVotePrince == 2 ? 1 : 0
+        });
+        Prince.publish(school_votes_prince,road_votes_prince)
+        commit();
+
+        //this is a price only step
+        Jazz.only(() => {
+            const usersVoteJazz = declassify(interact.projectVote)
+            //new votes
+            const school_votes_jazz =  usersVoteJazz == 1 ? 1 : 0 
+            const road_votes_jazz =  usersVoteJazz == 2 ? 1 : 0
+        });
+        Jazz.publish(school_votes_jazz,road_votes_jazz)
+        commit();
+
+        //this is a kip only step
+        Kip.only(() => {
+            const newContractStatus = declassify(interact.getContractStatus())
         })
+        Kip.publish(newContractStatus)
         
-        //set contractStatus as contractIsAlive
-        contractIsAlive = contractStatus;
-        //add continue in order to break the loop
+        //now update the contract details
+        contractDetails = {
+            status:newContractStatus,
+            school: contractDetails.school + school_votes_kip + school_votes_prince + school_votes_jazz,
+            road: contractDetails.road + road_votes_kip + road_votes_prince + road_votes_jazz,
+            totalFunds: balance()
+        }
         continue
     }
 
-    // const View_Contract = View('Contract', { balance: Address })
-    // View_Contract.balance.set(balance());
+    //Inform all the Participant of the result
+    each([Kip,Prince,Jazz],() => {
+        interact.logFromBackend2(contractDetails)
+    })
 
-    
-    //transfer all tokens back to its owners for now to allow code to compile
+    // transfer all tokens back to its owners for now to allow code to compile
+    // ToDo : Find a way to send funds to the correct project
     transfer(donationAmtKip).to(Kip)
-    transfer(donationAmtPrince).to(Kip)
-    transfer(donationAmtJazz).to(Kip)
+    transfer(donationAmtPrince).to(Prince)
+    transfer(donationAmtJazz).to(Jazz)
     //commit all the changes above
     commit()
 });
