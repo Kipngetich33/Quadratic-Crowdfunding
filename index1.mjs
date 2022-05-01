@@ -35,15 +35,15 @@ const projectsDetails = {
 
     //add comments to show the user that the contract is starting
     console.log(".......................Quadratic Crowdfunding...................................................................")
-    console.log("Starting........................................................................................................")
+    console.log("Starting.............................................................")
 
     
     // *************************************************************************************************************************
     // User definition/login section
 
-    // //i have initialized the application with three users for now as represented below
+    //i have initialized the application with three users for now as represented below
     const predefinedUserNames = ['Prince','Jazz','Kip']
-    // const predefinedProjects = ['School Project','Road Project']
+    const predefinedProjects = ['School Project','Road Project']
 
     //ask user for their username
     const userName = await ask(
@@ -98,6 +98,11 @@ const projectsDetails = {
         ctc = userAccount.contract(backend)
         ctc.getInfo().then((contractDetails) => {
             console.log(`The contract is deployed as = ${JSON.stringify(contractDetails)}`)
+            //get contract address and set the contractID as the address
+            ctc.getContractAddress().then((info) => {
+                contractId = info
+                console.log(`Deployed Contract's Address is ${contractId}`)
+            })
         })
     }else{
         const contractDetails = await ask(
@@ -125,22 +130,20 @@ const projectsDetails = {
 
     //initialize user interact
     const interact = { ...stdlib.hasRandom }
-    //add value to the interact object
+    //add donation amout to interact
     interact.donationAmt = donatedAmt
     interact.projectVote = projectVote
+
+    interact.showTotalFunds = async (totalContractBalance) => {
+        const standardizedBalance = parseAtomicToStandard(totalContractBalance)
+        console.log(`Total funds donated : ${standardizedBalance}`)
+    }
 
     interact.logFromBackend = async (valueFromBackend) => {
         console.log(`The value of backend ${valueFromBackend}`);
     }
 
-    interact.logFromBackend2 = async (valueFromBackend) => {
-        console.log(".......................Results...................................................................")
-        console.log(`Total Votes: School: ${valueFromBackend.school},road: ${valueFromBackend.road}`);
-        console.log(`Total funds contributed: ${parseAtomicToStandard(valueFromBackend.totalFunds)}`)
-        console.log(".......................The End...................................................................")
-    }
-
-    // get close command function
+    //get close command function
     interact.getContractStatus = async () => {
         console.log("getting closing command")
         const closeContract = await ask(
@@ -167,6 +170,10 @@ const projectsDetails = {
     // *************************************************************************************************************************
     //keep the contract alive
     interact.closeContract = 0
+    //check it the current user is the one that deployed the contract
+    if(userName == 'Kip'){
+        
+    }
     
     // *************************************************************************************************************************
     //the end
