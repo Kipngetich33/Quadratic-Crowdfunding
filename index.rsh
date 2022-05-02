@@ -30,14 +30,15 @@ export const main = Reach.App(()=> {
     //ToDo: Pull partipants from mongo database
     //but for now just create four participants Genesis, Prince,Jazz,Kip
 
-    // //the partipant Genesis is the initializer of the contract itself
-    // const Genesis = Participant('Genesis', {
-    //     ...User,
-    // })
-
+    //create Participant interfaces for the two projects if.e Road and school,these two 
+    //accounts are where the funds will be transfered
+    // const School = Participant('School', {})
+    // const Road = Participant('Road', {})
+    
     //The other three partipants are actual application users
     const Kip = Participant('Kip', {
         ...User,
+        ...hasConsoleLogger
     })
 
     const Prince = Participant('Prince', {
@@ -66,6 +67,19 @@ export const main = Reach.App(()=> {
     Prince.publish(donationAmtPrince)
         .pay(donationAmtPrince)
     commit();
+
+    //add publish for the project Participant so that they are bound to an adresss and can recieve funds
+    // School.only(() => {
+
+    // })
+    // School.publish()
+    // commit();
+    // Road.only(() => {
+        
+    // })
+    // Road.publish()
+    // commit();
+
     //Jazz's step
     Jazz.only(()=> {
         const donationAmtJazz = declassify(interact.donationAmt)
@@ -83,6 +97,8 @@ export const main = Reach.App(()=> {
     invariant( balance() == (donationAmtKip + donationAmtPrince + donationAmtJazz) )
     while(contractDetails.status){
         commit()
+        //this is a proof of concept on how to log in the frontend
+        // Kip.interact.log("Loggin for Kipngetich")
        
         //this is a kip only step
         Kip.only(() => {
@@ -114,6 +130,20 @@ export const main = Reach.App(()=> {
         });
         Jazz.publish(school_votes_jazz,road_votes_jazz)
         commit();
+
+        //add publish for the project Participant so that they are bound to an adresss and can recieve funds
+        // School.only(() => {
+
+        // })
+        // School.publish()
+        //     .timeout(relativeTime(0),()=>{});
+        // commit();
+        // Road.only(() => {
+            
+        // })
+        // Road.publish()
+        //     .timeout(relativeTime(0),()=>{});
+        // commit();
 
         //this is a kip only step
         Kip.only(() => {
