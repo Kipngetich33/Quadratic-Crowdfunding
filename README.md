@@ -36,20 +36,20 @@
 - Any of the users can deploy the contract and the other can attach to it
 - Only Kip can close the contract once all participants have donated 
 
-### Donation implementation version = 0.0.2 (WIP)
+### Donation implementation version = 0.0.2 (Closed)
 - Allow user to donate to the pool i.e the contract
 - Show the total amount donated to the pool 
 
-### Voting implementaton version = 0.0.3 (Open)
+### Voting implementaton version = 0.0.3 (Closed)
 - Predefine 2 projects that user can donate to
 - Functionality to allow users vote for their favorite projects
 - Show total votes for each project
 
-### Funds share implementation version = 0.0.4 (open)
+### Funds share implementation version = 0.0.4 (WIP)
 - Use votes and formula to calculate funds each project will recive
 - Show the results of the share that each project will recieve
 
-### Disburse funds implementation version = 0.0.4 (open)
+### Disburse funds implementation version = 0.0.4 (WIP)
 - Define an account for each project
 - Send the correct share amount to the project's account
 

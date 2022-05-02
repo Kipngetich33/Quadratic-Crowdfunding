@@ -124,7 +124,7 @@ const projectsDetails = {
     
 
     //initialize user interact
-    const interact = { ...stdlib.hasRandom }
+    const interact = { ...stdlib.hasRandom,...stdlib.hasConsoleLogger }
     //add value to the interact object
     interact.donationAmt = donatedAmt
     interact.projectVote = projectVote
@@ -142,7 +142,6 @@ const projectsDetails = {
 
     // get close command function
     interact.getContractStatus = async () => {
-        console.log("getting closing command")
         const closeContract = await ask(
             'The contract is running.Do you want to end it?',
             yesno
