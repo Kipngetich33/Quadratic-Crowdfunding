@@ -45,7 +45,7 @@
 - Functionality to allow users vote for their favorite projects
 - Show total votes for each project
 
-### Funds share implementation version = 0.0.4 (WIP)
+### Funds share implementation version = 0.0.4 (Closed)
 - Use votes and formula to calculate funds each project will recive
 - Show the results of the share that each project will recieve
 
@@ -59,4 +59,8 @@
 ### Complemt Version 1.0.0 (open)
 - Clean up the code and add comments
 - Add tests and assertions
+
+## Documents
+#### Link to Google docs
+- https://docs.google.com/document/d/18R29Vax4e--uDPomElpK-7w-lhfDSpzn5zBug__ov6o/edit?usp=sharing
 

@@ -155,6 +155,22 @@ const projectsDetails = {
         }
     }
 
+    interact.informTimeOut = async () => {
+        console.log("You have unfortunately timed out")
+    }
+
+    interact.logFromBackend3 = async (myArray) => {
+        console.log("my array below")
+        console.log(myArray)
+    }
+
+    interact.informUserOfFundsShare = async (totalFunds,schoolProjectFunds,roadProjectFunds) => {
+        console.log("*********************************************Results***********************************************************");
+        console.log(`Total Funds Contributed: ${parseAtomicToStandard(totalFunds)}`);
+        console.log(`School Funds: ${parseAtomicToStandard(schoolProjectFunds)}`);
+        console.log(`Road Funds: ${parseAtomicToStandard(roadProjectFunds)}`);
+    }
+
     // *************************************************************************************************************************
     // detertmine the correct part/frontend for each user
     const userParts = {
