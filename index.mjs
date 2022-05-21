@@ -5,6 +5,11 @@ const stdlib = loadStdlib(process.env);
 
 //declare global variables
 let contractId = null;
+const predefinedUserNames = ['Prince','Jazz','Kip']
+const predefinedProjects = ['School','Road']
+let userRole 
+let donatedAmt 
+let projectVote 
 const projectsDetails = {
     "School Project":{
         "Description":"Build a school",
@@ -39,23 +44,26 @@ const projectsDetails = {
 
     
     // *************************************************************************************************************************
-    // User definition/login section
-
-    // //i have initialized the application with three users for now as represented below
-    const predefinedUserNames = ['Prince','Jazz','Kip']
-    // const predefinedProjects = ['School Project','Road Project']
+    // User login section    
 
     //ask user for their username
-    const userName = await ask(
-        'Enter your username',
+    const userOrProjectName = await ask(
+        'Enter your User/Project Name',
         // name is gotten from the callback of what the user enters
         (name) => {
             //check if the given name matches predfined users
             if(predefinedUserNames.includes(name)){
+                //return the given name
+                userRole = "Contributor"
+                return name
+            }else if(predefinedProjects.includes(name)){
+                //set user role as a project owner
+                userRole = "Project Owner"
+                //return the given name
                 return name
             }else{
                 //throw and error that the entered name is not yet registered
-                throw Error(`The entered username ${name} is not yet registered`)
+                throw Error(`The entered Username / Project Name: ${name} is not yet registered`)
             }
         }
     )
@@ -108,21 +116,23 @@ const projectsDetails = {
         ctc = userAccount.contract(backend,contractDetails)
     }
 
-    //ask user how much they want to donate
-    const donatedAmt = await ask(
-        'How much do you want to donate',
-        stdlib.parseCurrency
-    )
+    if(userRole == "Contributor"){
+        //ask user how much they want to donate
+        donatedAmt = await ask(
+            'How much do you want to donate',
+            stdlib.parseCurrency
+        )
 
-    //ask user which project they would love to vote for
-    const projectVote = await ask(
-        // ToDO : add feature to check tha the given input is valid
-
-        "Enter Number for project you want to vote for: 1: School Project 2: Road Project",
-        ask.ask
-    )
+        //ask user which project they would love to vote for
+        projectVote = await ask(
+            // ToDO : add feature to check tha the given input is valid
+            "Enter Number for project you want to vote for: 1: School Project 2: Road Project",
+            ask.ask
+        )
+    }else{
+        console.log(`You are now participating in this smart contract as owner of the Project: ${userOrProjectName}`)
+    }
     
-
     //initialize user interact
     const interact = { ...stdlib.hasRandom,...stdlib.hasConsoleLogger }
     //add value to the interact object
@@ -176,7 +186,9 @@ const projectsDetails = {
     const userParts = {
         'Prince':backend.Prince,
         'Jazz':backend.Jazz,
-        'Kip':backend.Kip
+        'Kip':backend.Kip,
+        'School':backend.School,
+        'Road':backend.Road
     }
 
     // *************************************************************************************************************************
@@ -185,7 +197,7 @@ const projectsDetails = {
     
     // *************************************************************************************************************************
     //the end
-    const part = userParts[userName]
+    const part = userParts[userOrProjectName]
     await part(ctc, interact)
 
     //get user account balance at the end of the contract

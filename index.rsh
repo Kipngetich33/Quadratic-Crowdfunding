@@ -36,8 +36,12 @@ export const main = Reach.App(()=> {
 
     //create Participant interfaces for the two projects if.e Road and school,these two 
     //accounts are where the funds will be transfered
-    // const School = Participant('School', {})
-    // const Road = Participant('Road', {})
+    const School = Participant('School', {
+        ...User
+    })
+    const Road = Participant('Road', {
+        ...User
+    })
 
     //The other three partipants are actual application users
     const Kip = Participant('Kip', {
@@ -62,6 +66,18 @@ export const main = Reach.App(()=> {
     Kip.publish(donationAmtKip)
         .pay(donationAmtKip)
         // .timeout(relativeTime(5), () => closeTo(Kip,() => {}))
+    commit();
+
+
+    School.only(() => {
+    })
+    School.publish()
+    commit();
+
+    Road.only(() => {
+        
+    })
+    Road.publish()
     commit();
 
     //Prince Step
@@ -158,20 +174,6 @@ export const main = Reach.App(()=> {
         Jazz.publish(school_votes_jazz,road_votes_jazz,schoolAmountJazz,roadAmountJazz)
             // .timeout(relativeTime(5), () => closeTo(Jazz,() => {}))
         commit();
-
-        //add publish for the project Participant so that they are bound to an adresss and can recieve funds
-        // School.only(() => {
-
-        // })
-        // School.publish()
-        //     .timeout(relativeTime(0),()=>{});
-        // commit();
-        // Road.only(() => {
-            
-        // })
-        // Road.publish()
-        //     .timeout(relativeTime(0),()=>{});
-        // commit();
 
         //this is a kip only step
         Kip.only(() => {
@@ -282,14 +284,22 @@ export const main = Reach.App(()=> {
         interact.informUserOfFundsShare(totalFunds,schoolProjectFunds,roadProjectFunds)
     });
 
-
     //end of calculate project voting power ************************************************************************************************************************
 
     // transfer all tokens back to its owners for now to allow code to compile
     // ToDo : Find a way to send funds to the correct project
-    transfer(donationAmtKip).to(Kip)
-    transfer(donationAmtPrince).to(Prince)
-    transfer(donationAmtJazz).to(Jazz)
+    // transfer(donationAmtKip).to(Kip)
+    // transfer(donationAmtPrince).to(Prince)
+    // transfer(donationAmtJazz).to(Jazz)
+
+    //there will be a very small balance remaining use it to remunarate the person who deployed the
+    //contract
+    const remainingFunds = balance() - (schoolProjectFunds + roadProjectFunds)
+    //now transfer the amount to the correct project
+    transfer(schoolProjectFunds).to(School)
+    transfer(roadProjectFunds).to(Road)
+    transfer(remainingFunds).to(Kip)
+
     //commit all the changes above
     commit()
 });
